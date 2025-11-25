@@ -1,5 +1,9 @@
 # Financial Advisor Agent
 
+[![Tests](https://github.com/lemduc/financial-advisor-agent/workflows/Tests/badge.svg)](https://github.com/lemduc/financial-advisor-agent/actions)
+[![Python 3.9+](https://img.shields.io/badge/python-3.9+-blue.svg)](https://www.python.org/downloads/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
 An agent-first research and reminder assistant that helps individual investors monitor their portfolio, receive timely trade nudges, and surface evidence-backed market insights. The initial milestone focuses on a chat-based AI interface that can orchestrate data retrieval, structured analysis prompts, and scheduling logic while maintaining clear disclaimers.
 
 ## Key Capabilities (Target)
@@ -147,21 +151,7 @@ pytest tests/test_agent.py::TestAnalysisTypeDetection -v
 pytest --cov=app --cov=agents --cov-report=html
 ```
 
-### Test Results
-
-```
-============================= test session starts ==============================
-collected 68 items
-
-tests/test_agent.py::TestAnalysisTypeDetection ............... [ 23%]
-tests/test_agent.py::TestTickerExtraction ................ [ 44%]
-tests/test_agent.py::TestMessageProcessing ........... [ 62%]
-tests/test_agent.py::TestSessionManagement ...... [ 72%]
-tests/test_chat_endpoint.py::TestChatEndpoint .................... [ 94%]
-tests/test_schemas.py::TestSchemaValidation .......... [100%]
-
-============================== 68 passed in 0.31s ===============================
-```
+All 68 tests pass successfully with comprehensive coverage of agent logic, API endpoints, and data models.
 
 ### Continuous Integration
 
@@ -176,8 +166,8 @@ jobs:
   test:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-python@v4
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
         with:
           python-version: '3.11'
       - run: pip install -r requirements.txt
