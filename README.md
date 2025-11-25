@@ -21,15 +21,168 @@ An agent-first research and reminder assistant that helps individual investors m
 ## Getting Started
 
 1. Clone the repository and ensure Python 3.11+ is available.
-2. Create a virtual environment and install dependencies via `pip install -r requirements.txt`.
+2. Create a virtual environment and install dependencies:
+   ```bash
+   python3 -m venv .venv
+   source .venv/bin/activate  # On Windows: .venv\Scripts\activate
+   pip install -r requirements.txt
+   ```
 3. Create a `.env` file (copy from local template) and fill API keys, database DSN, and LLM credentials.
-4. Launch the development server with `make dev`; run the test suite with `make test`.
+4. Launch the development server:
+   ```bash
+   make dev
+   # Server runs at http://localhost:8000
+   # API docs at http://localhost:8000/docs
+   ```
+5. Run the test suite:
+   ```bash
+   make test
+   ```
 
 ## Project Status
 
-- ✅ Repository initialization and planning documents.
-- 🚧 Agent service scaffolding, data integrations, and reminder engine.
-- 📅 Future work: UI integrations, advanced analytics, backtesting modules.
+### Phase 1: Core Agent MVP ✅ (Complete)
+- ✅ Chat API endpoint with FastAPI (`POST /chat`)
+- ✅ Financial advisor agent with mock LLM responses
+- ✅ Bull/bear case analysis templates
+- ✅ Portfolio data models (Pydantic schemas)
+- ✅ Session management and conversation history
+- ✅ Comprehensive test suite (68 tests passing)
+
+### Phase 2: Reminder Engine 📅 (Planned)
+- Intent detection for trade reminders
+- APScheduler/Celery integration
+- Notification delivery (email/SMS)
+- Reminder management endpoints
+
+### Phase 3+: Advanced Features 📅 (Future)
+- Real LangChain + LLM integration
+- Portfolio storage (SQLite/PostgreSQL)
+- Data provider integrations (market data, earnings, news)
+- UI integrations and advanced analytics
+
+## API Usage
+
+### Chat Endpoint
+
+Send a message to the financial advisor agent:
+
+```bash
+curl -X POST http://localhost:8000/chat \
+  -H "Content-Type: application/json" \
+  -d '{
+    "message": "What is the bull case for AAPL?",
+    "user_id": "user-123"
+  }'
+```
+
+**Response:**
+```json
+{
+  "message": "**Bull Case for AAPL**\n\n**Strengths:**\n- Strong revenue growth...",
+  "session_id": "session-abc123",
+  "timestamp": "2025-11-24T10:00:00Z",
+  "analysis_type": "bull_bear",
+  "confidence": "medium",
+  "citations": [
+    "P/E Ratio: 22.5 (mock data)",
+    "Revenue Growth YoY: +15% (mock data)",
+    "Profit Margin: 28% (mock data)"
+  ],
+  "disclaimer": "This is not financial advice..."
+}
+```
+
+### Available Analysis Types
+
+- **Bull/Bear Cases**: "What's the bull case for MSFT?"
+- **Earnings Analysis**: "Show me the earnings for GOOGL"
+- **Risk Assessment**: "What are the risks of TSLA?"
+- **Stock Comparison**: "Compare AAPL vs MSFT"
+- **General Queries**: "How can you help me?"
+
+### Interactive Documentation
+
+Visit http://localhost:8000/docs for interactive API documentation with Swagger UI.
+
+## Testing
+
+The project includes a comprehensive test suite with **68 tests** covering all core functionality.
+
+### Test Coverage
+
+- **Agent Logic** (`tests/test_agent.py`)
+  - Analysis type detection (bull/bear, earnings, comparison, risk)
+  - Ticker symbol extraction
+  - Message processing and response generation
+  - Session management
+  - Citation generation
+
+- **API Endpoints** (`tests/test_chat_endpoint.py`)
+  - Chat endpoint functionality
+  - Request/response validation
+  - Session persistence
+  - Error handling
+  - OpenAPI schema validation
+
+- **Data Models** (`tests/test_schemas.py`)
+  - Pydantic schema validation
+  - ChatRequest/ChatResponse models
+  - Portfolio and Holding models
+  - JSON serialization/deserialization
+
+### Running Tests
+
+```bash
+# Run all tests
+make test
+
+# Run specific test file
+pytest tests/test_agent.py -v
+
+# Run specific test class
+pytest tests/test_agent.py::TestAnalysisTypeDetection -v
+
+# Run with coverage report
+pytest --cov=app --cov=agents --cov-report=html
+```
+
+### Test Results
+
+```
+============================= test session starts ==============================
+collected 68 items
+
+tests/test_agent.py::TestAnalysisTypeDetection ............... [ 23%]
+tests/test_agent.py::TestTickerExtraction ................ [ 44%]
+tests/test_agent.py::TestMessageProcessing ........... [ 62%]
+tests/test_agent.py::TestSessionManagement ...... [ 72%]
+tests/test_chat_endpoint.py::TestChatEndpoint .................... [ 94%]
+tests/test_schemas.py::TestSchemaValidation .......... [100%]
+
+============================== 68 passed in 0.31s ===============================
+```
+
+### Continuous Integration
+
+For GitHub Actions, add `.github/workflows/test.yml`:
+
+```yaml
+name: Tests
+
+on: [push, pull_request]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+      - run: pip install -r requirements.txt
+      - run: make test
+```
 
 ## Container & Deployment
 
