@@ -65,6 +65,30 @@ An agent-first research and reminder assistant that helps individual investors m
 - Data provider integrations (market data, earnings, news)
 - UI integrations and advanced analytics
 
+## Configuration
+
+### CORS Settings
+
+The API includes CORS middleware to allow frontend applications to connect. By default, it allows common development ports:
+
+- `http://localhost:3000` (React, Next.js default)
+- `http://localhost:3001` (Alternative React port)
+- `http://localhost:5173` (Vite default)
+- `http://localhost:8080` (General web dev)
+
+To customize allowed origins, set the `CORS_ORIGINS` environment variable:
+
+```bash
+# .env file
+CORS_ORIGINS=http://localhost:3000,https://yourdomain.com
+```
+
+For production, specify your exact domains:
+
+```bash
+CORS_ORIGINS=https://yourdomain.com,https://www.yourdomain.com
+```
+
 ## API Usage
 
 ### Chat Endpoint
@@ -108,6 +132,86 @@ curl -X POST http://localhost:8000/chat \
 ### Interactive Documentation
 
 Visit http://localhost:8000/docs for interactive API documentation with Swagger UI.
+
+### Connecting from Frontend
+
+Example using **React** with `fetch`:
+
+```javascript
+// api/chat.js
+export async function sendMessage(message, sessionId = null) {
+  const response = await fetch('http://localhost:8000/chat', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      message,
+      session_id: sessionId,
+      user_id: 'user-123'
+    }),
+  });
+
+  return response.json();
+}
+
+// Usage in component
+const handleSend = async () => {
+  const result = await sendMessage('What is the bull case for AAPL?');
+  console.log(result.message, result.citations);
+};
+```
+
+Example using **axios**:
+
+```javascript
+import axios from 'axios';
+
+const api = axios.create({
+  baseURL: 'http://localhost:8000',
+  headers: {
+    'Content-Type': 'application/json',
+  },
+});
+
+export const chatAPI = {
+  sendMessage: (message, sessionId, userId) =>
+    api.post('/chat', {
+      message,
+      session_id: sessionId,
+      user_id: userId,
+    }),
+};
+```
+
+Example using **TypeScript** with type safety:
+
+```typescript
+interface ChatRequest {
+  message: string;
+  session_id?: string;
+  user_id?: string;
+}
+
+interface ChatResponse {
+  message: string;
+  session_id: string;
+  timestamp: string;
+  analysis_type: string;
+  confidence: string;
+  citations: string[];
+  disclaimer: string;
+}
+
+async function chat(request: ChatRequest): Promise<ChatResponse> {
+  const response = await fetch('http://localhost:8000/chat', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(request),
+  });
+  return response.json();
+}
+```
 
 ## Testing
 

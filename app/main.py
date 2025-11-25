@@ -1,4 +1,7 @@
+import os
+
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 
 from agents.advisor_agent import FinancialAdvisorAgent
 from app.schemas.chat import ChatRequest, ChatResponse
@@ -19,6 +22,21 @@ app = FastAPI(
     contact={
         "name": "Financial Advisor Agent Team",
     },
+)
+
+# Configure CORS
+# Get allowed origins from environment variable, defaulting to common development URLs
+allowed_origins = os.getenv(
+    "CORS_ORIGINS",
+    "http://localhost:3000,http://localhost:3001,http://localhost:5173,http://localhost:8080"
+).split(",")
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=allowed_origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
 # Initialize the advisor agent
